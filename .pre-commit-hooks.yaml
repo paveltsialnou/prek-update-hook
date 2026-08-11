@@ -1,0 +1,10 @@
+---
+- always_run: true
+  description: Check that hook repositories pinned in the prek config are up to date (pass --fix to apply updates)
+  entry: prek-update-hook
+  id: prek-update
+  language: rust
+  name: prek update
+  pass_filenames: false
+  stages:
+    - pre-commit

@@ -1,0 +1,42 @@
+[[repos]]
+  hooks = [
+    { id = "check-toml" },
+    { id = "check-yaml" },
+    { id = "end-of-file-fixer" },
+    { id = "trailing-whitespace" },
+  ]
+  repo  = "builtin"
+
+[[repos]]
+  hooks = [{ id = "typos" }]
+  repo  = "https://github.com/crate-ci/typos"
+  rev   = "v1.48.0"
+
+[[repos]]
+  hooks = [
+    {
+      id                = "cargo-fmt",
+      name              = "cargo fmt",
+      entry             = "cargo fmt -- --check",
+      language          = "system",
+      pass_filenames    = false,
+      types             = ["rust"],
+    },
+    {
+      id                = "cargo-clippy",
+      name              = "cargo clippy",
+              entry             = "cargo clippy --all-targets -- --deny warnings",
+      language          = "system",
+      pass_filenames    = false,
+      types             = ["rust"],
+    },
+    {
+      id                = "validate-manifest",
+      name              = "prek validate-manifest",
+      entry             = "prek validate-manifest .pre-commit-hooks.yaml",
+      language          = "system",
+      always_run        = true,
+      pass_filenames    = false,
+    },
+  ]
+  repo  = "local"

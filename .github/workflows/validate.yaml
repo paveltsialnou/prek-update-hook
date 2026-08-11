@@ -1,0 +1,30 @@
+---
+name: Validate
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Format
+        run: cargo fmt --check
+
+      - name: Lint
+        run: cargo clippy --all-targets -- --deny warnings
+
+      - name: Test
+        run: cargo test
+
+      - name: prek checks
+        uses: j178/prek-action@v3.0.0

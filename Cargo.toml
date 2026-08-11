@@ -1,0 +1,10 @@
+[package]
+categories = ["development-tools"]
+description = "prek hook that checks whether pinned hook repositories are up to date"
+edition = "2021"
+keywords = ["git", "hooks", "prek", "update"]
+license = "MIT"
+name = "prek-update-hook"
+repository = "https://github.com/paveltsialnou/prek-update-hook"
+rust-version = "1.70"
+version = "0.1.0"
