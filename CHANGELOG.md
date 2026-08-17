@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0]
+
+### Added
+
+- `--exclude-repo=<REPO>` option to skip specific repositories during `--fix`. May be
+  specified multiple times.
+
+## [0.1.0]
+
 ### Added
 
 - `prek-update` hook that checks whether pinned hook repositories in the prek
