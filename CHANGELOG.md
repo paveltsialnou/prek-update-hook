@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0]
+
+### Added
+
+- `--version` / `-V` flag to print the tool version.
+
+### Changed
+
+- Signal-killed child processes now return an error instead of `UpdateNeeded`.
+
+### Fixed
+
+- `--exclude-repo=` with empty value now returns an error instead of silently accepting it.
+
+## [0.3.0]
+
+### Added
+
+- `--repo-tag <REPO>=<PATTERN>` option to filter which tags are considered for a given
+  repository. May be specified multiple times. Translates to prek's `--repo-include-tag`.
+
 ## [0.2.0]
 
 ### Added

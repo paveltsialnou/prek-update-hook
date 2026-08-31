@@ -12,6 +12,8 @@ fn args_from_str(s: &str) -> Vec<String> {
 fn empty_args() {
     let args = parse_args(args_from_str("")).unwrap();
     assert!(!args.fix);
+    assert!(!args.help);
+    assert!(!args.version);
     assert!(args.exclude_repos.is_empty());
     assert!(args.repo_tags.is_empty());
     assert!(args.passthrough.is_empty());
@@ -146,13 +148,27 @@ fn build_command_with_exclude_and_tag() {
 #[test]
 fn help_long_flag_in_passthrough() {
     let args = parse_args(args_from_str("--help")).unwrap();
-    assert_eq!(args.passthrough, vec!["--help"]);
+    assert!(args.help);
+    assert!(args.passthrough.is_empty());
 }
 
 #[test]
 fn help_short_flag_in_passthrough() {
     let args = parse_args(args_from_str("-h")).unwrap();
-    assert_eq!(args.passthrough, vec!["-h"]);
+    assert!(args.help);
+    assert!(args.passthrough.is_empty());
+}
+
+#[test]
+fn version_short_flag() {
+    let args = parse_args(args_from_str("-V")).unwrap();
+    assert!(args.version);
+}
+
+#[test]
+fn version_long_flag() {
+    let args = parse_args(args_from_str("--version")).unwrap();
+    assert!(args.version);
 }
 
 #[test]
@@ -312,6 +328,8 @@ fn build_command_multiple_tags() {
 fn parse_args_empty_iter() {
     let args = parse_args(std::iter::empty::<String>()).unwrap();
     assert!(!args.fix);
+    assert!(!args.help);
+    assert!(!args.version);
     assert!(args.exclude_repos.is_empty());
     assert!(args.repo_tags.is_empty());
     assert!(args.passthrough.is_empty());
@@ -321,6 +339,8 @@ fn parse_args_empty_iter() {
 fn parse_args_only_binary_name() {
     let args = parse_args(vec!["prek-update-hook".to_string()]).unwrap();
     assert!(!args.fix);
+    assert!(!args.help);
+    assert!(!args.version);
     assert!(args.exclude_repos.is_empty());
     assert!(args.repo_tags.is_empty());
     assert!(args.passthrough.is_empty());
@@ -364,8 +384,8 @@ fn run_invalid_repo_tag_equals_via_run() {
 
 #[test]
 fn exclude_repo_with_equals_empty_value() {
-    let args = parse_args(args_from_str("--exclude-repo=")).unwrap();
-    assert_eq!(args.exclude_repos, vec![""]);
+    let err = parse_args(args_from_str("--exclude-repo=")).unwrap_err();
+    assert_eq!(err, ParseError::MissingValue("--exclude-repo".into()));
 }
 
 #[test]
@@ -406,12 +426,21 @@ fn run_with_signal_killed() {
     let result = run_with(args_from_str("--verbose"), |_| {
         Ok(ExitStatus::from_raw(9)) // SIGKILL
     });
-    assert!(matches!(result, ExitCode::UpdateNeeded));
+    match result {
+        ExitCode::Error(msg) => assert!(msg.contains("killed by a signal")),
+        _ => panic!("expected error"),
+    }
 }
 
 #[test]
 fn run_with_help_flag() {
     let result = run_with(args_from_str("--help"), |_| unreachable!());
+    assert!(matches!(result, ExitCode::Success));
+}
+
+#[test]
+fn run_with_version_flag() {
+    let result = run_with(args_from_str("--version"), |_| unreachable!());
     assert!(matches!(result, ExitCode::Success));
 }
 
@@ -434,6 +463,14 @@ fn binary_help_exits_zero() {
     assert!(output.status.success());
     let stdout = String::from_utf8(output.stdout).unwrap();
     assert!(stdout.contains("prek-update-hook"));
+}
+
+#[test]
+fn binary_version_exits_zero() {
+    let output = bin().arg("--version").output().unwrap();
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains(env!("CARGO_PKG_VERSION")));
 }
 
 #[test]

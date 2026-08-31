@@ -12,7 +12,7 @@ Add the repo to your `prek.toml`:
 [[repos]]
 hooks = [{ id = "prek-update" }]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.3.0"
+rev  = "v0.4.0"
 ```
 
 The hook runs automatically before every commit (`pre-commit` stage). To apply the available updates, enable the fixer via `args`:
@@ -21,7 +21,7 @@ The hook runs automatically before every commit (`pre-commit` stage). To apply t
 [[repos]]
 hooks = [{ args = ["--fix"], id = "prek-update" }]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.3.0"
+rev  = "v0.4.0"
 ```
 
 To skip specific repositories during fix:
@@ -38,7 +38,7 @@ hooks = [
   },
 ]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.3.0"
+rev  = "v0.4.0"
 ```
 
 To only consider certain tag patterns per repository (e.g., only patch updates):
@@ -54,7 +54,7 @@ hooks = [
   },
 ]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.3.0"
+rev  = "v0.4.0"
 ```
 
 ## Behavior
@@ -63,6 +63,7 @@ rev  = "v0.3.0"
 - **fix mode** (`--fix`): runs `prek update` and rewrites `rev` in your config to the latest versions.
 - **`--exclude-repo=<REPO>`**: skip a specific repository during `--fix`. May be specified multiple times.
 - **`--repo-tag <REPO>=<PATTERN>`**: only consider tags matching this glob for a repository. May be specified multiple times. Translates to prek's `--repo-include-tag`.
+- **`--version` / `-V`**: print the tool version.
 
 Additional arguments are forwarded to `prek update`, for example
 `--cooldown-days`, `--repo`, or `--exclude-tag`.

@@ -1,42 +1,50 @@
 [[repos]]
-  hooks = [
-    { id = "check-toml" },
-    { id = "check-yaml" },
-    { id = "end-of-file-fixer" },
-    { id = "trailing-whitespace" },
-  ]
-  repo  = "builtin"
+hooks = [
+  { id = "check-toml", name = "builtin (check-toml)" },
+  { id = "check-yaml", name = "builtin (check-yaml)" },
+  { id = "end-of-file-fixer", name = "builtin (end-of-file-fixer)" },
+  { id = "trailing-whitespace", name = "builtin (trailing-whitespace)" },
+]
+repo = "builtin"
 
 [[repos]]
-  hooks = [{ id = "typos" }]
-  repo  = "https://github.com/crate-ci/typos"
-  rev   = "v1.49.0"
+hooks = [{ id = "typos" }]
+repo = "https://github.com/crate-ci/typos"
+rev = "v1.49.0"
 
 [[repos]]
-  hooks = [
-    {
-      id                = "cargo-fmt",
-      name              = "cargo fmt",
-      entry             = "cargo fmt -- --check",
-      language          = "system",
-      pass_filenames    = false,
-      types             = ["rust"],
-    },
-    {
-      id                = "cargo-clippy",
-      name              = "cargo clippy",
-      entry             = "cargo clippy --all-targets -- --deny warnings",
-      language          = "system",
-      pass_filenames    = false,
-      types             = ["rust"],
-    },
-    {
-      id                = "validate-manifest",
-      name              = "prek validate-manifest",
-      entry             = "prek validate-manifest .pre-commit-hooks.yaml",
-      language          = "system",
-      always_run        = true,
-      pass_filenames    = false,
-    },
-  ]
-  repo  = "local"
+hooks = [
+  {
+    id = "cargo-fmt",
+    name = "cargo (fmt)",
+    entry = "cargo fmt -- --check",
+    language = "system",
+    pass_filenames = false,
+    types = ["rust"],
+  },
+  {
+    id = "cargo-clippy",
+    name = "cargo (clippy)",
+    entry = "cargo clippy --all-targets -- --deny warnings",
+    language = "system",
+    pass_filenames = false,
+    types = ["rust"],
+  },
+  {
+    id = "validate-manifest",
+    name = "prek (validate-manifest)",
+    entry = "prek validate-manifest .pre-commit-hooks.yaml",
+    language = "system",
+    always_run = true,
+    pass_filenames = false,
+  },
+]
+repo = "local"
+
+[[repos]]
+hooks = [
+  { args = ["--offline"], id = "tombi-lint", name = "tombi (lint)" },
+  { args = ["--offline"], id = "tombi-format", name = "tombi (format)" },
+]
+repo = "https://github.com/tombi-toml/tombi-pre-commit"
+rev = "v1.5.0"
