@@ -144,7 +144,8 @@ where
             _ => match exec(&parsed) {
                 Ok(status) => match status.code() {
                     Some(0) => ExitCode::Success,
-                    Some(_code) => ExitCode::UpdateNeeded,
+                    Some(1) => ExitCode::UpdateNeeded,
+                    Some(code) => ExitCode::Error(format!("error: prek exited with code {code}")),
                     None => ExitCode::Error("error: prek was killed by a signal".into()),
                 },
                 Err(e) => ExitCode::Error(format!("error: failed to run prek: {e}")),

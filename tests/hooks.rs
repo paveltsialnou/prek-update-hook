@@ -422,6 +422,17 @@ fn run_with_command_nonzero_exit() {
 }
 
 #[test]
+fn run_with_command_error_exit() {
+    let result = run_with(args_from_str("--verbose"), |_| {
+        Ok(ExitStatus::from_raw(2 << 8)) // exit code 2
+    });
+    match result {
+        ExitCode::Error(msg) => assert!(msg.contains("prek exited with code 2")),
+        _ => panic!("expected error"),
+    }
+}
+
+#[test]
 fn run_with_signal_killed() {
     let result = run_with(args_from_str("--verbose"), |_| {
         Ok(ExitStatus::from_raw(9)) // SIGKILL
@@ -490,7 +501,7 @@ fn binary_missing_exclude_repo_exits_two() {
 }
 
 #[test]
-fn binary_update_needed_exits_one() {
+fn binary_prek_error_exits_two() {
     let dir = std::env::temp_dir().join("prek-update-hook-test");
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
@@ -500,6 +511,8 @@ fn binary_update_needed_exits_one() {
         .output()
         .unwrap();
     let output = bin().current_dir(&dir).output().unwrap();
-    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(output.status.code(), Some(2));
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert!(stderr.contains("prek exited with code"));
     let _ = std::fs::remove_dir_all(&dir);
 }

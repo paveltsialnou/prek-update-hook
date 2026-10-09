@@ -12,7 +12,7 @@ Add the repo to your `prek.toml`:
 [[repos]]
 hooks = [{ id = "prek-update" }]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.4.0"
+rev  = "v0.4.1"
 ```
 
 The hook runs automatically before every commit (`pre-commit` stage). To apply the available updates, enable the fixer via `args`:
@@ -21,7 +21,7 @@ The hook runs automatically before every commit (`pre-commit` stage). To apply t
 [[repos]]
 hooks = [{ args = ["--fix"], id = "prek-update" }]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.4.0"
+rev  = "v0.4.1"
 ```
 
 To skip specific repositories during fix:
@@ -38,7 +38,7 @@ hooks = [
   },
 ]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.4.0"
+rev  = "v0.4.1"
 ```
 
 To only consider certain tag patterns per repository (e.g., only patch updates):
@@ -54,7 +54,7 @@ hooks = [
   },
 ]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.4.0"
+rev  = "v0.4.1"
 ```
 
 ## Behavior

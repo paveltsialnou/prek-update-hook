@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1]
+
+### Fixed
+
+- Nonzero `prek` exit codes other than 1 (e.g. a missing or malformed config) are now
+  reported as errors (exit 2) instead of being mistaken for available updates (exit 1).
+
 ## [0.4.0]
 
 ### Added
