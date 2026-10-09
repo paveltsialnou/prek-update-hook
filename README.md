@@ -1,6 +1,6 @@
 # prek-update-hook
 
-A [prek][1]-only hook that checks whether the hook repositories pinned in your prek config (`prek.toml` or `.pre-commit-config.yaml`) are up to date, and can apply the updates for you.
+A [prek][1]-only hook that checks whether the hook repositories pinned in your `prek.toml` are up to date, and can apply the updates for you.
 
 Written in Rust, with no runtime dependencies. The hook binary only wraps `prek update` (a prek-specific command), so this repository is **not** compatible with upstream `pre-commit`.
 
@@ -16,7 +16,7 @@ Add the repo to your `prek.toml`:
 [[repos]]
 hooks = [{ id = "prek-update" }]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.5.0"
+rev  = "v0.5.1"
 ```
 
 The hook runs automatically before every commit (`pre-commit` stage). To apply the available updates, enable the fixer via `args`:
@@ -25,7 +25,7 @@ The hook runs automatically before every commit (`pre-commit` stage). To apply t
 [[repos]]
 hooks = [{ args = ["--fix"], id = "prek-update" }]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.5.0"
+rev  = "v0.5.1"
 ```
 
 To skip specific repositories during fix:
@@ -42,7 +42,7 @@ hooks = [
   },
 ]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.5.0"
+rev  = "v0.5.1"
 ```
 
 To only consider certain tag patterns per repository (e.g., only patch updates):
@@ -58,7 +58,7 @@ hooks = [
   },
 ]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.5.0"
+rev  = "v0.5.1"
 ```
 
 ## Behavior

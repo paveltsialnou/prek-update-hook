@@ -10,34 +10,13 @@ repo = "builtin"
 [[repos]]
 hooks = [{ id = "typos" }]
 repo = "https://github.com/crate-ci/typos"
-rev = "v1.49.0"
+rev = "v1.51.1"
 
 [[repos]]
 hooks = [
-  {
-    id = "cargo-fmt",
-    name = "cargo (fmt)",
-    entry = "cargo fmt -- --check",
-    language = "system",
-    pass_filenames = false,
-    types = ["rust"],
-  },
-  {
-    id = "cargo-clippy",
-    name = "cargo (clippy)",
-    entry = "cargo clippy --all-targets -- --deny warnings",
-    language = "system",
-    pass_filenames = false,
-    types = ["rust"],
-  },
-  {
-    id = "validate-manifest",
-    name = "prek (validate-manifest)",
-    entry = "prek validate-manifest .pre-commit-hooks.yaml",
-    language = "system",
-    always_run = true,
-    pass_filenames = false,
-  },
+  { id = "cargo-fmt", name = "cargo (fmt)", entry = "cargo fmt -- --check", language = "system", pass_filenames = false, types = ["rust"] },
+  { id = "cargo-clippy", name = "cargo (clippy)", entry = "cargo clippy --all-targets -- --deny warnings", language = "system", pass_filenames = false, types = ["rust"] },
+  { id = "validate-manifest", name = "prek (validate-manifest)", entry = "prek validate-manifest .pre-commit-hooks.yaml", language = "system", always_run = true, pass_filenames = false },
 ]
 repo = "local"
 
@@ -47,4 +26,9 @@ hooks = [
   { args = ["--offline"], id = "tombi-format", name = "tombi (format)" },
 ]
 repo = "https://github.com/tombi-toml/tombi-pre-commit"
-rev = "v1.5.0"
+rev = "v1.7.3"
+
+[[repos]]
+hooks = [{ args = ["--fix"], id = "prek-update", name = "prek (update)" }]
+repo = "https://github.com/paveltsialnou/prek-update-hook"
+rev = "v0.5.0"

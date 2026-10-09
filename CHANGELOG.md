@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1]
+
+### Changed
+
+- Internal refactor only: the crate is split into `args`, `command`, and `run` modules, and
+  the test suite into per-concern integration tests. No behavior change.
+- CI now runs formatting, linting, and the non-`prek` tests in parallel, with a separate job
+  that installs `prek` for the end-to-end tests.
+- The repository now dogfoods the `prek-update` hook in its own `prek.toml`.
+
 ## [0.5.0]
 
 ### Added
