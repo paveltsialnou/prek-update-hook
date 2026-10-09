@@ -16,6 +16,7 @@ fn empty_args() {
     assert!(!args.version);
     assert!(args.exclude_repos.is_empty());
     assert!(args.repo_tags.is_empty());
+    assert!(args.exclude_repo_tags.is_empty());
     assert!(args.passthrough.is_empty());
 }
 
@@ -70,7 +71,13 @@ fn repo_tag_missing_value() {
 #[test]
 fn repo_tag_invalid_format() {
     let err = parse_args(args_from_str("--repo-tag badvalue")).unwrap_err();
-    assert_eq!(err, ParseError::InvalidRepoTag("badvalue".into()));
+    assert_eq!(
+        err,
+        ParseError::InvalidRepoFilter {
+            flag: "--repo-tag",
+            value: "badvalue".into(),
+        }
+    );
 }
 
 #[test]
@@ -82,12 +89,13 @@ fn passthrough_args() {
 #[test]
 fn combined_args() {
     let args = parse_args(args_from_str(
-        "-f --exclude-repo=r1 --repo-tag r2=v2.* --verbose",
+        "-f --exclude-repo=r1 --repo-tag r2=v2.* --exclude-repo-tag r3=v3.* --verbose",
     ))
     .unwrap();
     assert!(args.fix);
     assert_eq!(args.exclude_repos, vec!["r1"]);
     assert_eq!(args.repo_tags, vec![("r2".into(), "v2.*".into())]);
+    assert_eq!(args.exclude_repo_tags, vec![("r3".into(), "v3.*".into())]);
     assert_eq!(args.passthrough, vec!["--verbose"]);
 }
 
@@ -184,16 +192,26 @@ fn parse_error_display_missing() {
 
 #[test]
 fn parse_error_display_invalid() {
-    let err = ParseError::InvalidRepoTag("bad".into());
-    assert_eq!(format!("{err:?}"), r#"InvalidRepoTag("bad")"#);
+    let err = ParseError::InvalidRepoFilter {
+        flag: "--repo-tag",
+        value: "bad".into(),
+    };
+    assert_eq!(
+        format!("{err:?}"),
+        r#"InvalidRepoFilter { flag: "--repo-tag", value: "bad" }"#
+    );
 }
 
 #[test]
 fn args_struct_fields() {
-    let args = parse_args(args_from_str("-f --exclude-repo=a --repo-tag b=c -- -x")).unwrap();
+    let args = parse_args(args_from_str(
+        "-f --exclude-repo=a --repo-tag b=c --exclude-repo-tag d=e -- -x",
+    ))
+    .unwrap();
     assert!(args.fix);
     assert_eq!(args.exclude_repos, vec!["a"]);
     assert_eq!(args.repo_tags, vec![("b".into(), "c".into())]);
+    assert_eq!(args.exclude_repo_tags, vec![("d".into(), "e".into())]);
     assert_eq!(args.passthrough, vec!["--", "-x"]);
 }
 
@@ -239,7 +257,104 @@ fn run_invalid_repo_tag_format() {
 #[test]
 fn repo_tag_equals_invalid_format() {
     let err = parse_args(args_from_str("--repo-tag=novalue")).unwrap_err();
-    assert_eq!(err, ParseError::InvalidRepoTag("novalue".into()));
+    assert_eq!(
+        err,
+        ParseError::InvalidRepoFilter {
+            flag: "--repo-tag",
+            value: "novalue".into(),
+        }
+    );
+}
+
+#[test]
+fn exclude_repo_tag_long() {
+    let args = parse_args(args_from_str("--exclude-repo-tag myrepo=v1.*")).unwrap();
+    assert_eq!(
+        args.exclude_repo_tags,
+        vec![("myrepo".into(), "v1.*".into())]
+    );
+}
+
+#[test]
+fn exclude_repo_tag_equals() {
+    let args = parse_args(args_from_str("--exclude-repo-tag=myrepo=v1.*")).unwrap();
+    assert_eq!(
+        args.exclude_repo_tags,
+        vec![("myrepo".into(), "v1.*".into())]
+    );
+}
+
+#[test]
+fn exclude_repo_tag_missing_value() {
+    let err = parse_args(args_from_str("--exclude-repo-tag")).unwrap_err();
+    assert_eq!(err, ParseError::MissingValue("--exclude-repo-tag".into()));
+}
+
+#[test]
+fn exclude_repo_tag_invalid_format() {
+    let err = parse_args(args_from_str("--exclude-repo-tag badvalue")).unwrap_err();
+    assert_eq!(
+        err,
+        ParseError::InvalidRepoFilter {
+            flag: "--exclude-repo-tag",
+            value: "badvalue".into(),
+        }
+    );
+}
+
+#[test]
+fn exclude_repo_tag_equals_invalid_format() {
+    let err = parse_args(args_from_str("--exclude-repo-tag=novalue")).unwrap_err();
+    assert_eq!(
+        err,
+        ParseError::InvalidRepoFilter {
+            flag: "--exclude-repo-tag",
+            value: "novalue".into(),
+        }
+    );
+}
+
+#[test]
+fn multiple_exclude_repo_tags() {
+    let args = parse_args(args_from_str(
+        "--exclude-repo-tag a=1.* --exclude-repo-tag=b=2.*",
+    ))
+    .unwrap();
+    assert_eq!(
+        args.exclude_repo_tags,
+        vec![("a".into(), "1.*".into()), ("b".into(), "2.*".into())]
+    );
+}
+
+#[test]
+fn build_command_with_exclude_repo_tag() {
+    let args = parse_args(args_from_str("--exclude-repo-tag r1=v1.*")).unwrap();
+    let cmd = build_command(&args);
+    let collected: Vec<_> = cmd.get_args().collect();
+    assert_eq!(
+        collected,
+        vec!["update", "--check", "--repo-exclude-tag", "r1=v1.*"]
+    );
+}
+
+#[test]
+fn run_missing_exclude_repo_tag_value() {
+    let result = run(args_from_str("--exclude-repo-tag"));
+    match result {
+        ExitCode::Error(msg) => assert!(msg.contains("--exclude-repo-tag requires a value")),
+        _ => panic!("expected error"),
+    }
+}
+
+#[test]
+fn run_invalid_exclude_repo_tag_format() {
+    let result = run(args_from_str("--exclude-repo-tag badvalue"));
+    match result {
+        ExitCode::Error(msg) => {
+            assert!(msg.contains("--exclude-repo-tag requires <REPO>=<PATTERN>"))
+        }
+        _ => panic!("expected error"),
+    }
 }
 
 #[test]
@@ -332,6 +447,7 @@ fn parse_args_empty_iter() {
     assert!(!args.version);
     assert!(args.exclude_repos.is_empty());
     assert!(args.repo_tags.is_empty());
+    assert!(args.exclude_repo_tags.is_empty());
     assert!(args.passthrough.is_empty());
 }
 
@@ -343,6 +459,7 @@ fn parse_args_only_binary_name() {
     assert!(!args.version);
     assert!(args.exclude_repos.is_empty());
     assert!(args.repo_tags.is_empty());
+    assert!(args.exclude_repo_tags.is_empty());
     assert!(args.passthrough.is_empty());
 }
 
@@ -398,6 +515,20 @@ fn repo_tag_with_equals_empty_pattern() {
 fn run_with_command_not_found() {
     let result = run_with(args_from_str("--verbose"), |_| {
         Command::new("/nonexistent").status()
+    });
+    match result {
+        ExitCode::Error(msg) => assert!(msg.contains("`prek` not found on PATH")),
+        _ => panic!("expected error"),
+    }
+}
+
+#[test]
+fn run_with_other_io_error() {
+    let result = run_with(args_from_str("--verbose"), |_| {
+        Err(std::io::Error::new(
+            std::io::ErrorKind::PermissionDenied,
+            "nope",
+        ))
     });
     match result {
         ExitCode::Error(msg) => assert!(msg.contains("failed to run prek")),
@@ -490,6 +621,18 @@ fn binary_invalid_repo_tag_exits_two() {
     assert_eq!(output.status.code(), Some(2));
     let stderr = String::from_utf8(output.stderr).unwrap();
     assert!(stderr.contains("--repo-tag"));
+}
+
+#[test]
+fn binary_invalid_exclude_repo_tag_exits_two() {
+    let output = bin()
+        .arg("--exclude-repo-tag")
+        .arg("badvalue")
+        .output()
+        .unwrap();
+    assert_eq!(output.status.code(), Some(2));
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert!(stderr.contains("--exclude-repo-tag"));
 }
 
 #[test]

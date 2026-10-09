@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0]
+
+### Added
+
+- `--exclude-repo-tag <REPO>=<PATTERN>` option to ignore tags matching a glob for a given
+  repository. May be specified multiple times. Translates to prek's `--repo-exclude-tag`.
+
+### Changed
+
+- A missing `prek` binary on `PATH` now produces a clear error with an install link
+  instead of a generic spawn failure.
+
+### Fixed
+
+- The MSRV (Rust 1.70) CI job can now read `Cargo.lock` (lockfile version 3).
+
 ## [0.4.1]
 
 ### Fixed

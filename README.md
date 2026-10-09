@@ -4,6 +4,10 @@ A [prek][1]-only hook that checks whether the hook repositories pinned in your p
 
 Written in Rust, with no runtime dependencies. The hook binary only wraps `prek update` (a prek-specific command), so this repository is **not** compatible with upstream `pre-commit`.
 
+## Requirements
+
+[`prek`][1] must be installed and available on your `PATH`.
+
 ## Usage
 
 Add the repo to your `prek.toml`:
@@ -12,7 +16,7 @@ Add the repo to your `prek.toml`:
 [[repos]]
 hooks = [{ id = "prek-update" }]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.4.1"
+rev  = "v0.5.0"
 ```
 
 The hook runs automatically before every commit (`pre-commit` stage). To apply the available updates, enable the fixer via `args`:
@@ -21,7 +25,7 @@ The hook runs automatically before every commit (`pre-commit` stage). To apply t
 [[repos]]
 hooks = [{ args = ["--fix"], id = "prek-update" }]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.4.1"
+rev  = "v0.5.0"
 ```
 
 To skip specific repositories during fix:
@@ -38,7 +42,7 @@ hooks = [
   },
 ]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.4.1"
+rev  = "v0.5.0"
 ```
 
 To only consider certain tag patterns per repository (e.g., only patch updates):
@@ -54,7 +58,7 @@ hooks = [
   },
 ]
 repo = "https://github.com/paveltsialnou/prek-update-hook"
-rev  = "v0.4.1"
+rev  = "v0.5.0"
 ```
 
 ## Behavior
@@ -63,6 +67,7 @@ rev  = "v0.4.1"
 - **fix mode** (`--fix`): runs `prek update` and rewrites `rev` in your config to the latest versions.
 - **`--exclude-repo=<REPO>`**: skip a specific repository during `--fix`. May be specified multiple times.
 - **`--repo-tag <REPO>=<PATTERN>`**: only consider tags matching this glob for a repository. May be specified multiple times. Translates to prek's `--repo-include-tag`.
+- **`--exclude-repo-tag <REPO>=<PATTERN>`**: ignore tags matching this glob for a repository. May be specified multiple times. Translates to prek's `--repo-exclude-tag`.
 - **`--version` / `-V`**: print the tool version.
 
 Additional arguments are forwarded to `prek update`, for example
